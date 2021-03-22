@@ -1,12 +1,8 @@
 /*------------------------------------------------------------------
-    Version: 1.0
--------------------------------------------------------------------*/
-
-/*------------------------------------------------------------------
     IMPORT FONTS
 -------------------------------------------------------------------*/
 
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:300,400,500,700');
+@import url('https://fonts.googleapis.com/css?family=Roboto+Mono:300,400,500,700');
 
 /*------------------------------------------------------------------
     IMPORT FILES
@@ -26,7 +22,7 @@
 body {
     color: #999999;
     font-size: 14px;
-    font-family: 'Quicksand', monospace;
+    font-family: 'Roboto Mono', monospace;
     line-height: 1.80857;
 }
 
