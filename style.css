@@ -336,16 +336,13 @@ a img.aligncenter {
 -------------------------------------------------------------------*/
 
 .main-banner{
-	height: 100%;
-	position: relative;
-    z-index: -1;
-}
-
-.main-banner{
 	display: table;
     width: 100%;
+    height: 100%;
 	text-align: center;
+	position: relative;
 }
+
 .main-banner::after {
     content: " ";
     position: absolute;
@@ -359,12 +356,10 @@ a img.aligncenter {
 }
 .heading{
 	color: #fff;
+	display: table-cell;
+	vertical-align: middle;
 	position: relative;
 	z-index: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
 }
 .heading h1{
 	color: #ffffff;
@@ -446,11 +441,10 @@ xclip
 }
 
 #clouds{
-	margin-top: -5%;
-	z-index: 1;
-    position: absolute;
+	position: absolute;
+    left: 0;
     bottom: 0;
-    
+    z-index: 1;
 }
 #clouds path {
     fill: #ffffff;

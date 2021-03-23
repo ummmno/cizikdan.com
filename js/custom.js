@@ -183,7 +183,7 @@ const resize = () => {
 };
 resize();
 
-const drawLight = () => {
+function drawLight() {
   ctx.beginPath();
   ctx.arc(light.x, light.y, 1000, 0, 2 * Math.PI);
   var gradient = ctx.createRadialGradient(
