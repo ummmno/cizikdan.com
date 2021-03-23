@@ -299,10 +299,6 @@ a img.aligncenter {
     HEADER
 -------------------------------------------------------------------*/
 
-.navbar-dark{
-	
-}
-
 .navbar-dark .navbar-nav .nav-link{
 	color: #ffffff;
 	letter-spacing: 1px;
@@ -340,15 +336,13 @@ a img.aligncenter {
 -------------------------------------------------------------------*/
 
 .main-banner{
-	height: 100%;
+	display: table;
+    width: 100%;
+    height: 100%;
+	text-align: center;
 	position: relative;
 }
 
-.main-banner{
-	display: table;
-    width: 100%;
-	text-align: center;
-}
 .main-banner::after {
     content: " ";
     position: absolute;
@@ -447,9 +441,10 @@ xclip
 }
 
 #clouds{
-	margin-top: -5%;
-	position: relative;
-	z-index: 1;
+	position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: 1;
 }
 #clouds path {
     fill: #ffffff;
@@ -2126,7 +2121,6 @@ select.mobile-device {
     font-weight: 400;
     font-size: 20px;
     text-transform: capitalize;
-    line-height: !important;
 }
 
 .footer {
@@ -2372,7 +2366,7 @@ select.mobile-device {
     color: #999 !important;
     margin: 0 !important;
     padding: 0 !important;
-    line-height: 1 !important:
+    line-height: 1 !important;
 }
 
 .stat-wrap p {
@@ -2381,7 +2375,7 @@ select.mobile-device {
     margin: 0;
     font-weight: 300;
     padding: 4px 0 0;
-    line-height: 1 !important:
+    line-height: 1 !important;
 }
 
 #preloader {
