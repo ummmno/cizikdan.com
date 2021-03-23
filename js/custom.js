@@ -169,6 +169,9 @@ let light = {
   y: 200
 };
 
+// Change this number for amount of boxes you want on the page
+const amountOfBoxes = 14;
+
 // Adding Event Listener to the document to detect mouse movement
 // On mouse change updating light object with event.clientX and event.clientY
 d.addEventListener("mousemove", () => {
@@ -319,7 +322,8 @@ function draw() {
 
 draw();
 
-while (boxes.length < 14) {
+
+while (boxes.length < amountOfBoxes) {
   boxes.push(new Box());
 }
 
