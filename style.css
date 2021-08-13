@@ -2385,6 +2385,15 @@ select.mobile-device {
     line-height: 1 !important:
 }
 
+#main-ld {
+    width: 70px;
+    height: 70px;
+    overflow: hidden;
+    position: absolute;
+    top: calc(50% - 17px);
+    left: calc(50% - 35px);
+  }
+
 body {
     background: #000;
   }
