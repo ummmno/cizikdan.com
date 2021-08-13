@@ -138,6 +138,8 @@ function(a,b,c,d){var e=function(b){this._core=b,this._timeout=null,this._paused
             dots:true,
             nav: true,
             responsiveClass:true,
+            autoplay:true,
+	        autoplayTimeout:4000,
             navText: [
                "<i class='fa fa-angle-left effect-1'></i>",
                "<i class='fa fa-angle-right effect-1'></i>"
