@@ -2386,12 +2386,7 @@ select.mobile-device {
 }
 
 #main-ld {
-    width: 70px;
-    height: 70px;
-    overflow: hidden;
-    position: absolute;
-    top: calc(50% - 17px);
-    left: calc(50% - 35px);
+   background: #000;
   }
 
 body {
