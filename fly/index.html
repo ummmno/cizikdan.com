@@ -11,16 +11,38 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-		<script type="module" crossorigin src="/fly/assets/index-d2413934.js"></script>
-		<link rel="stylesheet" href="/fly/assets/index-beb93de3.css">
+		<script type="module" crossorigin src="/fly/assets/index-a783ac45.js"></script>
+		<link rel="stylesheet" href="/fly/assets/index-e7135acd.css">
 	</head>
 	<body>
-    <div id="container">
-      <div id="question">FlyQuiz</div>
-      <div id="a1">a1</div>
-      <div id="a2">a2</div>
-      <div id="a3">a3</div>
-      <div id="score">Score: 0</div>
+    <div id="preloader">
+      <svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <path id="move-path" d="M102.546 83.5C109.859 70.8333 128.141 70.8333 135.454 83.5L157.971 122.5C165.284 135.167 156.143 151 141.517 151H96.4833C81.8571 151 72.7158 135.167 80.0289 122.5L102.546 83.5Z" fill="#D9D9D9"/>
+            <filter id="goo">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur" />
+              <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 60 -32"/>
+            </filter>
+        </defs>
+        <g filter="url(#goo)">
+            <circle cx="119" cy="74" r="20" stroke="#6f8191" stroke-width="8"/>
+            <circle cx="79" cy="141" r="20" stroke="#6f8191" stroke-width="8"/>
+            <circle cx="157" cy="141" r="20" stroke="#6f8191" stroke-width="8"/>
+            <circle cx="0" cy="0" r="14" fill="#6f8191">
+                <animateMotion path="M102.546 83.5C109.859 70.8333 128.141 70.8333 135.454 83.5L157.971 122.5C165.284 135.167 156.143 151 141.517 151H96.4833C81.8571 151 72.7158 135.167 80.0289 122.5L102.546 83.5Z" dur="2s" repeatCount="indefinite" />
+            </circle> 
+        </g>
+        </svg>
+        
+    </div>
+    <div id="main" style="display: none;">
+      <div id="container">
+        <div id="question">FlyQuiz</div>
+        <div id="a1">a1</div>
+        <div id="a2">a2</div>
+        <div id="a3">a3</div>
+        <div id="score">Score: 0</div>
+      </div>
     </div>
     
 	</body>
