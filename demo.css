@@ -20,10 +20,9 @@
  html {
     box-sizing: border-box;
     background: black;
-    font-size: calc(10px + .5vw);
+    font-size: calc(.5vw);
     font-family: sans-serif;
     scroll-behavior: smooth;
-    line-height: 1.4em;
     overflow: hidden;
   }
   
