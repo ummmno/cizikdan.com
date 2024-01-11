@@ -33,6 +33,17 @@
     margin: 0;
     padding: 0;
   }
+
+  body {
+    display: flex;
+    height: 100vh;
+  }
+
+  .perspective-text{
+    align-self: flex-end;
+    margin-bottom: 20vh;
+    opacity: 0.6;
+  }
   
   header {
     height: 100vh;
