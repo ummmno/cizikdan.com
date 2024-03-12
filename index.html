@@ -1,630 +1,452 @@
-<!DOCTYPE html>
-<html lang="en">
+<!--
+  ~ Copyright 2020  Kazimierz Pogoda
+  ~
+  ~ This file is part of shader-web-background.
+  ~
+  ~ shader-web-background is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ shader-web-background is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with shader-web-background.  If not, see <https://www.gnu.org/licenses/>.
+  -->
 
-    <!-- Basic -->
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">   
-   
-    <!-- Mobile Metas -->
-    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
- 
-     <!-- Site Metas -->
-    <title>Daniel</title>  
-    <meta name="title" content="Graphic design, by Dan">
-    <meta name="description" content="Do you need an affordable graphic designer? Need a logo or booming social media accounts? You're at the right place. I'm Daniel Čižík">
-    <meta name="author" content="Daniel Čižík">
-
-    <script src="https://kit.fontawesome.com/e1d74161b1.js" crossorigin="anonymous"></script>
-    
-    <!-- Site Icons -->
-    <link rel="shortcut icon" href="images/mylogo.ico" type="image/x-icon" />
-    <link rel="apple-touch-icon" href="images/mylogo.png">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <!-- Site CSS -->
-    <link rel="stylesheet" href="style.css">
-    <!-- Responsive CSS -->
-    <link rel="stylesheet" href="css/responsive.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/custom.css">
-	<script src="js/modernizr.js"></script> <!-- Modernizr -->
-
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
-</head>
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-BV1CQ2PQGW"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-BV1CQ2PQGW');
-</script>
-
-<body id="page-top" class="politics_version">
-
-    <!-- LOADER -->
-    <!--<div class="preloader-wrap">
-        <div class="preloader">
-          <div class="lines">
-            <div class="line line-1"></div>
-            <div class="line line-2"></div>
-            <div class="line line-3"></div>
-          </div>
-      
-          <div class="loading-text">LOADING</div>
+    <title>Dan</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="demo.css"/>
+    <script src="demo.js"></script>
+    <link rel="shortcut icon" href="mylogo.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="mylogo.png">
+  
+    <!--
+     In your code use rather the latest library distribution, or embed the code. See the instructions:
+  
+     https://github.com/xemantic/shader-web-background#adding-shader-web-background-to-your-projects
+  
+     In the demo, the sources are referenced directly, because changes in the library are tested
+     using this HTML, since the demo is using all the features of the library.
+     -->
+    <script src="shader-web-background-api.js"></script>
+    <script src="webgl-utils.js"></script>
+    <script src="shader-web-background.js"></script>
+    <script>
+      // spectral_zucconi6 by Alan Zucconi rewritten from GLSL to JS by Kazik Pogoda
+      // GLSL: https://www.shadertoy.com/view/ls2Bz1
+  
+      const ONE_IN_3D = [1, 1, 1];
+      const c1 = [3.54585104, 2.93225262, 2.41593945];
+      const x1 = [0.69549072, 0.49228336, 0.27699880];
+      const y1 = [0.02312639, 0.15225084, 0.52607955];
+      const c2 = [3.90307140, 3.21182957, 3.96587128];
+      const x2 = [0.11748627, 0.86755042, 0.66077860];
+      const y2 = [0.84897130, 0.88445281, 0.73949448];
+      const saturate = (x) => Math.min(Math.max(x, 0), 1);
+      const to3d = (x) => [x, x, x];
+      const add3d = (x, y) => [x[0] + y[0], x[1] + y[1], x[2] + y[2]];
+      const subtract3d = (x, y) => [x[0] - y[0], x[1] - y[1], x[2] - y[2]];
+      const multiply3d = (x, y) => [x[0] * y[0], x[1] * y[1], x[2] * y[2]];
+      const pow23d = (x) => multiply3d(x, x);
+      const saturate3d = (x) => [saturate(x[0]), saturate(x[1]), saturate(x[2])];
+      const bump3y = (x, yoffset) => saturate3d(subtract3d(subtract3d(ONE_IN_3D, pow23d(x)), yoffset));
+      const spectral_zucconi6 = (x) => add3d(bump3y(multiply3d(c1, subtract3d(to3d(x), x1)), y1), bump3y(multiply3d(c2, subtract3d(to3d(x), x2)), y2));
+    </script>
+    <script type="x-shader/x-fragment" id="feedback">
+      precision highp float;
+  
+      uniform vec2      iResolution;
+      uniform float     iMinDimension;
+      uniform sampler2D iChannel0;
+      uniform vec2      iScreenRatioHalf;
+      uniform vec2      iFeedbackZoomCenter;
+      uniform float     iFeedbackZoomRate;
+      uniform vec2      iFeedbackShiftVector;
+      uniform float     iFeedbackFadeRate;
+      uniform float     iFeedbackColorShiftZoom;
+      uniform float     iFeedbackColorShiftImpact;
+      uniform vec2      iDrawCenter;
+      uniform float     iDrawIntensity;
+      uniform float     iBlobEdgeSmoothing;
+      uniform float     iBlob1Radius;
+      uniform float     iBlob1PowFactor;
+      uniform vec3      iBlob1Color;
+      uniform float     iBlob2Radius;
+      uniform float     iBlob2PowFactor;
+      uniform vec3      iBlob2Color;
+      uniform float     iColorShiftOfRadius;
+  
+      /*
+        Normally it would be provided by texture parameters, but on iOS the texture REPEAT works only
+        for textures which size is the power of 2.
+       */
+      vec4 repeatedTexture(in sampler2D channel, in vec2 uv) {
+        return texture2D(channel, mod(uv, 1.));
+      }
+  
+      float drawBlob(
+        in vec2 st,
+        in vec2 center,
+        in float radius,
+        in float edgeSmoothing
+      ) {
+        float dist = length((st - center) / radius);
+        return dist * smoothstep(1., 1. - iBlobEdgeSmoothing, dist);
+      }
+  
+      void main() {
+        vec2 uv = gl_FragCoord.xy / iResolution;
+        vec2 st = (gl_FragCoord.xy * 2. - iResolution) / iMinDimension;
+  
+        float drawDist = length(st - iDrawCenter);
+  
+        vec3 colorShift = repeatedTexture(
+          iChannel0,
+          uv - st * iFeedbackColorShiftZoom * iScreenRatioHalf
+        ).rgb;
+  
+        vec2 stShift = vec2(0);
+        stShift += iFeedbackZoomRate * (st - iFeedbackZoomCenter);
+        stShift += (colorShift.rg - .5) * iFeedbackColorShiftImpact;
+        stShift += iFeedbackShiftVector;
+        stShift *= iScreenRatioHalf;
+  
+        vec3 prevColor = repeatedTexture(iChannel0, uv - stShift).rgb;
+        prevColor *= iFeedbackFadeRate;
+  
+        vec3 drawColor = vec3(0);
+  
+        float radius =
+          1.
+          + (colorShift.r + colorShift.g + colorShift.b) * iColorShiftOfRadius;
+        drawColor +=
+          pow(
+            drawBlob(st, iDrawCenter, radius * iBlob1Radius, iBlobEdgeSmoothing),
+            iBlob1PowFactor
+          ) * iBlob1Color;
+        drawColor +=
+          pow(
+            drawBlob(st, iDrawCenter, radius * iBlob2Radius, iBlobEdgeSmoothing),
+            iBlob2PowFactor
+          ) * iBlob2Color;
+  
+        vec3 color = vec3(0);
+        drawColor *= iDrawIntensity;
+        prevColor *= iFeedbackFadeRate;
+        color += prevColor;
+        color += drawColor;
+  
+        color = clamp(color, 0., 1.);
+        gl_FragColor = vec4(color, 1.);
+      }
+    </script>
+  
+    <!--
+      The "image" shader will just copy the "feedback" output to the canvas.
+     -->
+    <script type="x-shader/x-fragment" id="image">
+      precision highp float;
+  
+      uniform vec2 iResolution;
+      uniform sampler2D iChannel0;
+  
+      void main(){
+        gl_FragColor = texture2D(iChannel0, gl_FragCoord.xy / iResolution);
+      }
+    </script>
+    <script>
+      var time;
+  
+      var minDimension;
+      var screenRatioHalfX;
+      var screenRatioHalfY;
+  
+      var mouseX;
+      var mouseY;
+  
+      var stMouseX;
+      var stMouseY;
+  
+      var tiltLR = 0;
+      var tiltFB = 0;
+      var tiltFBDelta = null;
+  
+      var feedbackShiftVectorX;
+      var feedbackShiftVectorY;
+  
+      var oldScrollY;
+  
+      var drawCenterX;
+      var drawCenterY;
+  
+      const feedbackMouseShiftFactor = .003;
+      const feedbackTiltShiftFactor = .0002;
+      const backgroundParallaxScrollingFactor = .5;
+      const blob1ColorPulseSpeed = .04;
+      const blob2ColorPulseSpeed = .04;
+      const blob2ColorPulseShift = .5;
+      const drawCenterShiftDownScale = .99;
+  
+      var blob1Color;
+      var blob2Color;
+  
+      const loadScript = (src) => new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = src;
+        script.type = "text/javascript";
+        script.async = true;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+  
+      const onWindowLoad = () => new Promise((resolve) => {
+        window.addEventListener("load", resolve);
+      });
+  
+      function goFullScreen(canvas, noSleep) {
+        screenfull.on("change", () => {
+          if (!screenfull.isFullscreen) {
+            noSleep.disable();
+          }
+        });
+        screenfull
+          .request(canvas)
+          .then(() => noSleep.enable());
+      }
+  
+      function newButton(label, action) {
+        const button = document.createElement("button");
+        button.textContent = label;
+        button.addEventListener("click", action);
+        return button;
+      }
+  
+      function addControl(control) {
+        document
+          .getElementById("controls")
+          .appendChild(control);
+      }
+  
+      function maybeAddFullScreenAction() {
+        if (screenfull.isEnabled) {
+          const canvas = document.getElementById("shader-web-background");
+          const noSleep = new NoSleep();
+          addControl(
+            newButton(
+              "Go Full Screen",
+              () => goFullScreen(canvas, noSleep)
+            )
+          );
+        }
+      }
+  
+      function handleDeviceOrientationChange(event) {
+        if (event.beta) {
+          if (tiltFBDelta) {
+            tiltFB = event.beta - tiltFBDelta;
+          } else {  // first reading or calibration
+            tiltFBDelta = event.beta;
+            tiltFB = 0;
+          }
+        }
+        if (event.gamma) {
+          tiltLR = event.gamma;
+        }
+      }
+  
+      const deviceOrientationEvent = "deviceorientation";
+  
+      function trackDeviceOrientation() {
+        window.addEventListener(deviceOrientationEvent, handleDeviceOrientationChange, false);
+      }
+  
+      function untrackDeviceOrientation() {
+        window.removeEventListener(deviceOrientationEvent, handleDeviceOrientationChange, false);
+      }
+  
+      function calibrateDeviceOrientation() {
+        tiltFBDelta = null;
+      }
+  
+      function initDeviceOrientation() {
+        if (DeviceOrientationEvent.requestPermission) {
+          DeviceOrientationEvent.requestPermission()
+            .then(response => {
+              if (response == "granted") {
+                tiltFBDelta = null;
+                untrackDeviceOrientation(); // just in case it is subsequent attempt
+                trackDeviceOrientation();
+              }
+            })
+            .catch(console.error);
+        } else {
+          trackDeviceOrientation();
+          tiltFBDelta = null;
+        }
+      }
+  
+      function maybeAddCalibrateDeviceOrientationAction() {
+        if (window.DeviceOrientationEvent) {
+         addControl(
+            newButton(
+              "Calibrate Device Orientation",
+              () => initDeviceOrientation()
+            )
+          );
+        }
+      }
+  
+      function maybeAddActions() {
+        maybeAddCalibrateDeviceOrientationAction();
+        maybeAddFullScreenAction();
+      }
+  
+      if (window.DeviceOrientationEvent) {
+        if (!DeviceOrientationEvent.requestPermission) {
+          trackDeviceOrientation();
+        }
+      }
+  
+      document.addEventListener("mousemove", (event) => {
+         mouseX = event.clientX;
+         mouseY = event.clientY;
+      });
+  
+      onWindowLoad()
+        .then(() => Promise.all([
+          loadScript("https://unpkg.com/screenfull/dist/screenfull.js"),
+          loadScript("https://unpkg.com/nosleep.js/dist/NoSleep.min.js")
+        ]))
+        .then(maybeAddActions);
+  
+      shaderWebBackground.shade({
+        onInit: (ctx) => {
+          mouseX = ctx.cssWidth / 2.;
+          mouseY = ctx.cssHeight / 2.;
+          oldScrollY = window.scrollY;
+          drawCenterX = 0;
+          drawCenterY = 0;
+        },
+        onResize: (width, height) => {
+          minDimension = Math.min(width, height);
+          if (width >= height) {
+            screenRatioHalfX = height / width * .5;
+            screenRatioHalfY = .5;
+          } else {
+            screenRatioHalfX = .5;
+            screenRatioHalfY = width / height * .5;
+          }
+        },
+        onBeforeFrame: (ctx) => {
+          stMouseX = (2 * ctx.toShaderX(mouseX) - ctx.width) / minDimension;
+          stMouseY = (2 * ctx.toShaderY(mouseY) - ctx.height) / minDimension;
+          time = performance.now() / 1000;
+          const scrollY = window.scrollY;
+          const scrollYDelta = scrollY - oldScrollY;
+          if (scrollYDelta === 0) {
+            feedbackShiftVectorY = 0;
+          } else {
+            feedbackShiftVectorY =
+              scrollYDelta / minDimension
+              * 2 * ctx.cssPixelRatio
+              * backgroundParallaxScrollingFactor;
+            drawCenterY += feedbackShiftVectorY;
+          }
+          oldScrollY = scrollY;
+          if (tiltFBDelta) { // we have device orientation readings, better than mouse
+            feedbackShiftVectorX = tiltLR * feedbackTiltShiftFactor;
+            feedbackShiftVectorY += tiltFB * -feedbackTiltShiftFactor;
+          } else {
+            feedbackShiftVectorX = stMouseX * feedbackMouseShiftFactor;
+            feedbackShiftVectorY += stMouseY * feedbackMouseShiftFactor;
+          }
+          blob1Color = spectral_zucconi6((time * blob1ColorPulseSpeed) % 1);
+          blob2Color = spectral_zucconi6((time * blob2ColorPulseSpeed + blob2ColorPulseShift) % 1);
+        },
+        shaders: {
+          feedback: {
+            uniforms: {
+              iResolution:               (gl, loc, ctx) => gl.uniform2f(loc, ctx.width, ctx.height),
+              iMinDimension:             (gl, loc) => gl.uniform1f(loc, minDimension),
+              iScreenRatioHalf:          (gl, loc) => gl.uniform2f(loc, screenRatioHalfX, screenRatioHalfY),
+              iFeedbackZoomCenter:       (gl, loc) => gl.uniform2f(loc, 0, 0),
+              iFeedbackZoomRate:         (gl, loc) => gl.uniform1f(loc, .001),
+              iFeedbackShiftVector:      (gl, loc) => gl.uniform2f(loc, feedbackShiftVectorX, feedbackShiftVectorY),
+              iFeedbackFadeRate:         (gl, loc) => gl.uniform1f(loc, .999),
+              iFeedbackColorShiftZoom:   (gl, loc) => gl.uniform1f(loc, .2),
+              iFeedbackColorShiftImpact: (gl, loc) => gl.uniform1f(loc, .004),
+              iDrawCenter:               (gl, loc) => gl.uniform2f(loc, drawCenterX, drawCenterY),
+              iDrawIntensity:            (gl, loc) => gl.uniform1f(loc, .35),
+              iBlobEdgeSmoothing:        (gl, loc) => gl.uniform1f(loc, .04),
+              iBlob1Radius:              (gl, loc) => gl.uniform1f(loc, .3),
+              iBlob1PowFactor:           (gl, loc) => gl.uniform1f(loc, 40.),
+              iBlob1Color:               (gl, loc) => gl.uniform3f(loc, blob1Color[0], blob1Color[1], blob1Color[2]),
+              iBlob2Radius:              (gl, loc) => gl.uniform1f(loc, .4),
+              iBlob2PowFactor:           (gl, loc) => gl.uniform1f(loc, 40.),
+              iBlob2Color:               (gl, loc) => gl.uniform3f(loc, blob2Color[0], blob2Color[1], blob2Color[2]),
+              iColorShiftOfRadius:       (gl, loc) => gl.uniform1f(loc, .5),
+              iChannel0:                 (gl, loc, ctx) => ctx.texture(loc, ctx.buffers.feedback)
+            }
+          },
+          image: {
+            uniforms: {
+              iResolution: (gl, loc, ctx) => gl.uniform2f(loc, ctx.width, ctx.height),
+              iChannel0: (gl, loc, ctx) => ctx.texture(loc, ctx.buffers.feedback),
+            }
+          }
+        },
+        onAfterFrame: () => {
+          drawCenterY *= drawCenterShiftDownScale;
+        },
+        onError: (error, canvas) => {
+          document.documentElement.classList.add("fallback-background");
+          if (error instanceof shaderWebBackground.GlError) {
+            console.log("Could not shade, adding fallback CSS classes:", error);
+            // in regular web design we would just silently switch to fallback style
+            window.alert(
+              "The shader-web-background does not support your device/browser, therefore "
+                + "you cannot experience what is described here, try with another device");
+          } else {
+            throw error;
+          }
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <div class="perspective-text">
+        <div class="perspective-line">
+          <p></p>
+          <p>this will</p>
         </div>
-      </div>-->
-    <!-- END LOADER -->
-	
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
-      <div class="container">
-        <a class="navbar-brand js-scroll-trigger" href="#page-top">
-			<img class="img-fluid" src="images/logotomake.png" alt="" />
-		</a>
-        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-          Menu
-          <i class="fa fa-bars"></i>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarResponsive">
-          <ul class="navbar-nav text-uppercase ml-auto">
-            <li class="nav-item">
-              <a class="nav-link js-scroll-trigger active" href="#home">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link js-scroll-trigger" href="#about">About Me</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link js-scroll-trigger" href="#services">Services</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link js-scroll-trigger" href="#portfolio">Portfolio</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link js-scroll-trigger" href="#testimonials">Testimonials</a>
-            </li>
-			<li class="nav-item">
-              <a class="nav-link js-scroll-trigger" href="#contact">Contact me</a>
-            </li>
-          </ul>
+        <div class="perspective-line">
+          <p>coming</p>
+          <p>be my</p>
+        </div>
+        <div class="perspective-line">
+          <p>Soon</p>
+          <p>portfoilo</p>
+        </div>
+        <div class="perspective-line">
+          <p>i hope</p>
+          <p>if i get to it</p>
+        </div>
+        <div class="perspective-line">
+          <p>not sure tho</p>
+          <p></p>
         </div>
       </div>
-    </nav>
-	
-	<section id="home" class="main-banner parallaxie" style="background: url('uploads/banner-01.jpg')">
-		<div class="heading">
-			<h1>hello, i'm Daniel</h1>
-			<p>"In need of anything graphic design related? You're at the right place."</p>
-			<h3 class="cd-headline clip is-full-width">
-				<span>I can help with </span>
-				<span class="cd-words-wrapper">
-					<b class="is-visible">graphic design</b>
-					<b>logos</b>
-					<b>social media</b>
-					<b>business cards</b>
-				</span>
-			</h3>
-		</div>
-	</section>
-
-	<svg id="clouds" class="hidden-xs" xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100" viewBox="0 0 85 100" preserveAspectRatio="none">
-        <path d="M-5 100 Q 0 20 5 100 Z
-            M0 100 Q 5 0 10 100
-            M5 100 Q 10 30 15 100
-            M10 100 Q 15 10 20 100
-            M15 100 Q 20 30 25 100
-            M20 100 Q 25 -10 30 100
-            M25 100 Q 30 10 35 100
-            M30 100 Q 35 30 40 100
-            M35 100 Q 40 10 45 100
-            M40 100 Q 45 50 50 100
-            M45 100 Q 50 20 55 100
-            M50 100 Q 55 40 60 100
-            M55 100 Q 60 60 65 100
-            M60 100 Q 65 50 70 100
-            M65 100 Q 70 20 75 100
-            M70 100 Q 75 45 80 100
-            M75 100 Q 80 30 85 100
-            M80 100 Q 85 20 90 100
-            M85 100 Q 90 50 95 100
-            M90 100 Q 95 25 100 100
-            M95 100 Q 100 15 105 100 Z">
-        </path>
-    </svg>
-
-    <div id="about" class="section wb">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="message-box">                        
-                        <h2>About Me.</h2>
-                        <p>Hi, my name is Daniel. I'm a graphic designer. I mostly work in Photoshop and Illustrator. When I'm not working, I enjoy doing things around computers anyway (: . Some of my interests include sports (skiing, wakeboarding and more), FPV drones and video games. Oh and I also love traveling.</p>
-						<p>I am based in Prage, Czech Republic, but work with clients all around the world. Please don't hesitate to contact me via email or the form at the bottom of the page.</p>
-                    </div><!-- end messagebox -->
-                </div><!-- end col -->
-
-                <div class="col-md-6">
-                    <div class="right-box-pro wow fadeIn">
-                        <img src="uploads/about_04.jpg" alt="" class="img-fluid img-rounded">
-                    </div><!-- end media -->
-                </div><!-- end col -->
-            </div><!-- end row -->
-        </div><!-- end container -->
-    </div><!-- end section -->
-	
-    <div id="services" class="section lb">
-        <div class="container">
-            <div class="section-title text-left">
-                <h3>Services</h3>
-                <p>Here are some of the things I do and can help you with. I also do other things not listed here, so if it's related to graphic design, just ask! (: </p>
-            </div><!-- end title -->
-
-            <div class="row">
-				<div class="col-md-4">
-                    <div class="services-inner-box">
-						<div class="ser-icon">
-							<i class="far fa-address-card"></i>
-						</div>
-						<h2>Business cards</h2>
-						<p>One of the things I do and enjoy doing, are business cards. For a pretty cheap price I can design you a business card for you, tailored to your liking.</p>
-					</div>
-                </div><!-- end col -->
-                <div class="col-md-4">
-                    <div class="services-inner-box">
-						<div class="ser-icon">
-							<i class="fas fa-spinner"></i>
-						</div>
-						<h2>Logos</h2>
-						<p>In need of a logo? Do contact me, I will be happy to help. My style is modern and simplistic, you can see some examples below in my portfolio. </p>
-					</div>
-                </div><!-- end col -->
-				<div class="col-md-4">
-                    <div class="services-inner-box">
-						<div class="ser-icon">
-							<i class="fab fa-facebook-f"></i>
-						</div>
-						<h2>Social media posts</h2>
-						<p>Have a company Facebook or Instagram but no recent posts so it looks dead? One of my specialties is making posts for socials. </p>
-					</div>
-                </div><!-- end col -->
-				<div class="col-md-4">
-                    <div class="services-inner-box">
-						<div class="ser-icon">
-							<i class="fas fa-undo"></i>
-						</div>
-						<h2>Revisions</h2>
-						<p>Don't like something I made? It's no problem at all! Just tell me what you don't like and I will do my best to fix it. </p>
-					</div>
-                </div><!-- end col -->
-				<div class="col-md-4">
-                    <div class="services-inner-box">
-						<div class="ser-icon">
-							<i class="far fa-user"></i>
-						</div>
-						<h2>Social media interaction</h2>
-						<p>Just as important as having active social media accounts, it's important to have someone respond to your costumers. </p>
-					</div>
-                </div><!-- end col -->
-				<div class="col-md-4">
-                    <div class="services-inner-box">
-						<div class="ser-icon">
-							<i class="fas fa-align-center"></i>
-						</div>
-						<h2>Anything else?</h2>
-						<p>If there is anything graphic related, that I did not mention here, do contact me anyway, I'm sure I can help.</p>
-					</div>
-                </div><!-- end col -->
-            </div><!-- end row -->
-        </div><!-- end container -->
-    </div><!-- end section -->
-	
-	<div id="portfolio" class="section lb">
-		<div class="container">
-			<div class="section-title text-left">
-                <h3>Portfolio</h3>
-                <p>Down below you can see some of the work i did for my clients. And this is just the tip of the iceberg...</p>
-            </div><!-- end title -->
-			
-			<div class="gallery-menu row">
-				<div class="col-md-12">
-					<div class="button-group filter-button-group text-left">
-                        <button class="active" data-filter="*">All</button>
-						<button data-filter=".gal_a">Posts</button>
-                        <button data-filter=".gal_e">SageStone socials</button>
-						<button data-filter=".gal_b">Buisiness cards</button>
-						<button data-filter=".gal_c">Logos</button>
-                        <button data-filter=".gal_d">Miscellaneous</button>
-					</div>
-				</div>
-			</div>
-			
-			<div class="gallery-list row">
-                <div class="col-md-4 col-sm-6 gallery-grid gal_b">
-					<div class="gallery-single fix">
-						<img src="preview/cardmockup1.jpg" class="img-fluid" alt="Image">
-						<div class="img-overlay">
-							<a href="uploads/cardmockup1.jpg" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-picture-o"></i></a>
-						</div>
-					</div>
-                </div>
-
-                <div class="col-md-4 col-sm-6 gallery-grid gal_a">
-					<div class="gallery-single fix">
-						<img src="preview/post2.jpg" class="img-fluid" alt="Image">
-						<div class="img-overlay">
-							<a href="uploads/post2.jpg" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-picture-o"></i></a>
-						</div>
-					</div>
-				</div>
-
-                <div class="col-md-4 col-sm-6 gallery-grid gal_e">
-					<div class="gallery-single fix">
-						<img src="preview/Post13.jpg" class="img-fluid" alt="Image">
-						<div class="img-overlay">
-							<a href="uploads/Post13.png" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-picture-o"></i></a>
-						</div>
-					</div>
-				</div>
-				
-				<div class="col-md-4 col-sm-6 gallery-grid gal_a">
-					<div class="gallery-single fix">
-						<img src="preview/post1.jpg" class="img-fluid" alt="Image">
-						<div class="img-overlay">
-							<a href="uploads/post1.jpg" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-picture-o"></i></a>
-						</div>
-					</div>
-                </div>
-
-                <div class="col-md-4 col-sm-6 gallery-grid gal_e">
-					<div class="gallery-single fix">
-						<img src="preview/Post19.jpg" class="img-fluid" alt="Image">
-						<div class="img-overlay">
-							<a href="uploads/Post19.png" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-picture-o"></i></a>
-						</div>
-					</div>
-				</div>
-
-                <div class="col-md-4 col-sm-6 gallery-grid gal_a">
-					<div class="gallery-single fix">
-						<img src="preview/post3.jpg" class="img-fluid" alt="Image">
-						<div class="img-overlay">
-							<a href="uploads/post3.jpg" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-picture-o"></i></a>
-						</div>
-					</div>
-                </div>
-
-                <div class="col-md-4 col-sm-6 gallery-grid gal_a">
-					<div class="gallery-single fix">
-						<img src="preview/post4.jpg" class="img-fluid" alt="Image">
-						<div class="img-overlay">
-							<a href="uploads/post4.jpg" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-picture-o"></i></a>
-						</div>
-					</div>
-                </div>
-                
-                <div class="col-md-4 col-sm-6 gallery-grid gal_b">
-					<div class="gallery-single fix">
-						<img src="preview/cardmockup2.jpg" class="img-fluid" alt="Image">
-						<div class="img-overlay">
-							<a href="uploads/cardmockup2.jpg" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-picture-o"></i></a>
-						</div>
-					</div>
-                </div>
-
-                <div class="col-md-4 col-sm-6 gallery-grid gal_e">
-					<div class="gallery-single fix">
-						<img src="preview/Post10.jpg" class="img-fluid" alt="Image">
-						<div class="img-overlay">
-							<a href="uploads/Post10.png" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-picture-o"></i></a>
-						</div>
-					</div>
-				</div>
-                
-                <div class="col-md-4 col-sm-6 gallery-grid gal_b">
-					<div class="gallery-single fix">
-						<img src="preview/card1.jpg" class="img-fluid" alt="Image">
-						<div class="img-overlay">
-							<a href="uploads/card1.png" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-picture-o"></i></a>
-						</div>
-					</div>
-                </div>
-                
-                <div class="col-md-4 col-sm-6 gallery-grid gal_b">
-					<div class="gallery-single fix">
-						<img src="preview/card4.jpg" class="img-fluid" alt="Image">
-						<div class="img-overlay">
-							<a href="uploads/card4.png" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-picture-o"></i></a>
-						</div>
-					</div>
-                </div>
-                
-                <div class="col-md-4 col-sm-6 gallery-grid gal_c">
-					<div class="gallery-single fix">
-						<img src="preview/logo1.jpg" class="img-fluid" alt="Image">
-						<div class="img-overlay">
-							<a href="uploads/logo1.jpg" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-picture-o"></i></a>
-						</div>
-					</div>
-                </div>
-
-                <div class="col-md-4 col-sm-6 gallery-grid gal_e">
-					<div class="gallery-single fix">
-						<img src="preview/Post03.jpg" class="img-fluid" alt="Image">
-						<div class="img-overlay">
-							<a href="uploads/Post03.png" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-picture-o"></i></a>
-						</div>
-					</div>
-				</div>
-                
-                <div class="col-md-4 col-sm-6 gallery-grid gal_c">
-					<div class="gallery-single fix">
-						<img src="preview/logo2.jpg" class="img-fluid" alt="Image">
-						<div class="img-overlay">
-							<a href="uploads/logo2.png" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-picture-o"></i></a>
-						</div>
-					</div>
-                </div>
-                
-                <div class="col-md-4 col-sm-6 gallery-grid gal_c">
-					<div class="gallery-single fix">
-						<img src="preview/logomockup1.jpg" class="img-fluid" alt="Image">
-						<div class="img-overlay">
-							<a href="uploads/logomockup1.jpg" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-picture-o"></i></a>
-						</div>
-					</div>
-                </div>
-                
-                <div class="col-md-4 col-sm-6 gallery-grid gal_d">
-					<div class="gallery-single fix">
-						<img src="preview/misc1.jpg" class="img-fluid" alt="Image">
-						<div class="img-overlay">
-							<a href="uploads/misc1.png" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-picture-o"></i></a>
-						</div>
-					</div>
-                </div>
-
-                <div class="col-md-4 col-sm-6 gallery-grid gal_e">
-					<div class="gallery-single fix">
-						<img src="preview/Post17.jpg" class="img-fluid" alt="Image">
-						<div class="img-overlay">
-							<a href="uploads/Post17.png" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-picture-o"></i></a>
-						</div>
-					</div>
-				</div>
-
-                <div class="col-md-4 col-sm-6 gallery-grid gal_e">
-					<div class="gallery-single fix">
-						<img src="preview/Post06.jpg" class="img-fluid" alt="Image">
-						<div class="img-overlay">
-							<a href="uploads/Post06.png" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-picture-o"></i></a>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	
-	 <div id="testimonials" class="section wb">
-        <div class="container">
-            <div class="section-title text-left">
-                <h3>Testimonials</h3>
-                <p>Thank you all for your awesome testimonials. There are a lot of happy costumers! </p>
-            </div><!-- end title -->
-
-            <div class="row">
-                <div class="col-md-12 col-sm-12">
-                    <div class="testi-carousel owl-carousel owl-theme">
-                        <div class="testimonial clearfix">
-                            <div class="desc">
-                                <h3><i class="fa fa-quote-left"></i> Some great designs</h3>
-                                <p class="lead">Dan created some designs for thecard.cc. I enjoyed cooperation with him. Talented young guy... </p>
-                            </div>
-                            <div class="testi-meta">
-                                <img src="uploads/man.black.blue.png" alt="" class="img-fluid alignleft">
-                                <h4>Čeněk S. <small>- Czech rep.</small></h4>
-                            </div>
-                            <!-- end testi-meta -->
-                        </div>
-                        <!-- end testimonial -->
-
-                        <div class="testimonial clearfix">
-                            <div class="desc">
-                                <h3><i class="fa fa-quote-left"></i>Epic social media posts</h3>
-                                <p class="lead">Wow. Just wow. Our socials are booming, and at a pretty good price too. Can only reccomend. </p>
-                            </div>
-                            <div class="testi-meta">
-                                <img src="uploads/man.yel.black.png" alt="" class="img-fluid alignleft">
-                                <h4>Zdeněk V. <small>- Czech rep.</small></h4>
-                            </div>
-                            <!-- end testi-meta -->
-                        </div>
-                        <!-- end testimonial -->
-
-                        <div class="testimonial clearfix">
-                            <div class="desc">
-                                <h3><i class="fa fa-quote-left"></i> Love the logo</h3>
-                                <p class="lead">Dan made me a logo which I love. Really helped with my business. </p>
-                            </div>
-                            <div class="testi-meta">
-                                <img src="uploads/woman.yel.red.png" alt="" class="img-fluid alignleft">
-                                <h4>Nataly T. <small>- UK</small></h4>
-                            </div>
-                            <!-- end testi-meta -->
-                        </div>
-                        <!-- end testimonial -->
-                        
-                        <div class="testimonial clearfix">
-                            <div class="desc">
-                                <h3><i class="fa fa-quote-left"></i> Amazing service!</h3>
-                                <p class="lead">Service was amazing!!!! Very professional & high quality material! Very Satisfied. </p>
-                            </div>
-                            <div class="testi-meta">
-                                <img src="uploads/woman.brown.red.png" alt="" class="img-fluid alignleft">
-                                <h4>Sara K. <small>- USA</small></h4>
-                            </div>
-                            <!-- end testi-meta -->
-                        </div>
-                        <!-- end testimonial -->
-
-                        <div class="testimonial clearfix">
-                            <div class="desc">
-                                <h3><i class="fa fa-quote-left"></i> Quick</h3>
-                                <p class="lead">Daniel did a great job, was quick, courteous and got us exactly the design we needed for our busines. </p>
-                            </div>
-                            <div class="testi-meta">
-                                <img src="uploads/man.white.black.png" alt="" class="img-fluid alignleft">
-                                <h4>Matthew M. <small>- Australia</small></h4>
-                            </div>
-                            <!-- end testi-meta -->
-                        </div>
-                        <!-- end testimonial -->
-
-                        <div class="testimonial clearfix">
-                            <div class="desc">
-                                <h3><i class="fa fa-quote-left"></i> Nice service</h3>
-                                <p class="lead">Nice service. The guy did his job making sure I was pleased with the result. He kept in contact with me, so very nice overall. </p>
-                            </div>
-                            <div class="testi-meta">
-                                <img src="uploads/woman.yel.purp.png" alt="" class="img-fluid alignleft">
-                                <h4>Nellie K. <small>- Australia</small></h4>
-                            </div>
-                            <!-- end testi-meta -->
-                        </div>
-                        <!-- end testimonial -->
-
-                        <div class="testimonial clearfix">
-                            <div class="desc">
-                                <h3><i class="fa fa-quote-left"></i> Easy to work with</h3>
-                                <p class="lead">Very easy to work with, offered several examples. Multiple emails back and forth and all questions answered! Very impressed! </p>
-                            </div>
-                            <div class="testi-meta">
-                                <img src="uploads/man.black.blue.png" alt="" class="img-fluid alignleft">
-                                <h4>Aaron C. <small>- Poland</small></h4>
-                            </div>
-                            <!-- end testi-meta -->
-                        </div>
-                        <!-- end testimonial -->
-
-                        <div class="testimonial clearfix">
-                            <div class="desc">
-                                <h3><i class="fa fa-quote-left"></i> Quick turnaround</h3>
-                                <p class="lead">Did a wonderful job working out the design and a quick turnaround too. </p>
-                            </div>
-                            <div class="testi-meta">
-                                <img src="uploads/woman.yel.purp.png" alt="" class="img-fluid alignleft">
-                                <h4>Eleanor K. <small>- USA</small></h4>
-                            </div>
-                            <!-- end testi-meta -->
-                        </div>
-                        <!-- end testimonial -->
-
-                        <div class="testimonial clearfix">
-                            <div class="desc">
-                                <h3><i class="fa fa-quote-left"></i> Excellent service</h3>
-                                <p class="lead">Customer service was excellent! He attended to my requests quickly and enthusiastically. Will definitely use Dan again in the future. </p>
-                            </div>
-                            <div class="testi-meta">
-                                <img src="uploads/man.brown.black.png" alt="" class="img-fluid alignleft">
-                                <h4>Kevin R. <small>- Czech rep.</small></h4>
-                            </div>
-                            <!-- end testi-meta -->
-                        </div>
-                        <!-- end testimonial -->
-                    </div><!-- end carousel -->
-                </div><!-- end col -->
-            </div><!-- end row -->
-        </div><!-- end container -->
-    </div><!-- end section -->
-	
-
-
-    <div id="contact" class="section db">
-        <div class="container">
-            <div class="section-title text-left">
-                <h3>Get in touch</h3>
-                <p>If you like the stuff I made in the past, do fill out the form or email me and I will get back to you as soon as possible. The quote for the job will of course be free (:</p>
-                <!--<p>You can contact me on instagram @cizikgraphics, alternativley, my email is hello@cizikdan.com</p>-->
-                <p>My email is hello@cizikdan.com</p>
-            </div><!-- end title -->
-
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="contact_form">
-                        <div id="message"></div>
-                        <form name="Form submissions" method="POST" data-netlify="true">
-							<div class="row">
-								<div class="col-md-6">
-									<div class="form-group">
-										<input name="Name: " class="form-control" id="name" type="text" placeholder="Your Name" required="required" data-validation-required-message="Please enter your name.">
-										<p class="help-block text-danger"></p>
-									</div>
-									<div class="form-group">
-										<input name="Email: " class="form-control" id="email" type="email" placeholder="Your Email" required="required" data-validation-required-message="Please enter your email address.">
-										<p class="help-block text-danger"></p>
-									</div>
-									<div class="form-group">
-										<input name="Tel: " class="form-control" id="phone" type="tel" placeholder="Your Phone" required="required" data-validation-required-message="Please enter your phone number.">
-										<p class="help-block text-danger"></p>
-									</div>
-								</div>
-								<div class="col-md-6">
-									<div class="form-group">
-										<textarea name="Message: " class="form-control" id="message" placeholder="Your Message" required="required" data-validation-required-message="Please enter a message."></textarea>
-										<p class="help-block text-danger"></p>
-									</div>
-								</div>
-								<div class="clearfix"></div>
-								<div class="col-lg-12 text-center">
-									<div id="success"></div>
-									<button id="sendMessageButton" class="sim-btn btn-hover-new" data-text="Send Message" type="submit">Send Message</button>
-								</div>
-							</div>
-						</form>
-                    </div>
-                </div><!-- end col -->
-            </div><!-- end row -->
-        </div><!-- end container -->
-    </div><!-- end section -->
-
-    <div class="copyrights">
-        <div class="container">
-            <div class="footer-distributed">
-                <div class="footer-left">
-                    <p class="footer-links">
-                        <a class="js-scroll-trigger" href="#home">Home</a>
-                        <a class="js-scroll-trigger" href="#about">About</a>
-                        <a class="js-scroll-trigger" href="#services">Services</a>
-                        <a class="js-scroll-trigger" href="#portfolio">Portfolio</a>
-                        <a class="js-scroll-trigger" href="#testimonials">Testimonials</a>
-                        <a class="js-scroll-trigger" href="#contact">Contact</a>
-                        <!--<a class="js-scroll-trigger" href="https://www.instagram.com/cizikgraphics/" target=_blank>Instagram</a>-->
-                    </p>
-                    <p class="footer-company-name">All Rights Reserved. &copy; 2022 <a class="js-scroll-trigger" href="#contact">Daniel, hello@cizikdan.com</a>
-                </div>
-            </div>
-        </div><!-- end container -->
-    </div><!-- end copyrights -->
-
-    <a href="#" id="scroll-to-top" class="dmtop global-radius"><i class="fa fa-angle-up"></i></a>
-
-    <!-- ALL JS FILES -->
-    <script src="js/all.js"></script>
-	<!-- Camera Slider -->
-	<script src="js/jquery.mobile.customized.min.js"></script>
-	<script src="js/jquery.easing.1.3.js"></script> 
-	<script src="js/parallaxie.js"></script>
-	<script src="js/headline.js"></script>
-	<!-- Contact form JavaScript -->
-    <script src="js/jqBootstrapValidation.js"></script>
-    <script src="js/contact_me.js"></script>
-    <!-- ALL PLUGINS -->
-    <script src="js/custom.js"></script>
-    <script src="js/jquery.vide.js"></script>
-</body>
-</html>
+    <section id="controls">
+    </section>
+  </body>
+  </html>

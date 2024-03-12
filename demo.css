@@ -1,0 +1,198 @@
+/*
+ * Copyright 2020  Kazimierz Pogoda
+ *
+ * This file is part of shader-web-background.
+ *
+ * shader-web-background is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * shader-web-background is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with shader-web-background.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+ html {
+    box-sizing: border-box;
+    background: black;
+    font-family: sans-serif;
+    scroll-behavior: smooth;
+    overflow: hidden;
+  }
+  
+  *, *:before, *:after {
+    box-sizing: inherit;
+  }
+  
+  body, h1, pre {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    display: flex;
+    height: 100vh;
+  }
+
+  .perspective-text{
+    align-self: flex-end;
+    margin-bottom: 20vh;
+    opacity: 0.6;
+  }
+  
+  header {
+    height: 100vh;
+    overflow: hidden; /* in case logo is too big on a small screen */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* switch off text selection on header */
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  
+  header h1 {
+    text-transform: lowercase;
+    color: rgba(255, 255, 255, .8);
+    text-align: center;
+    font-weight: normal;
+    word-spacing: 100vw; /* will make sure that each word is in separate line */
+    text-shadow: 0px .03em .06em black;
+    animation: fade-in 6s;
+    animation-fill-mode: both;
+  }
+  
+  header h1 a {
+    text-decoration: none;
+    color: rgba(255, 255, 255, .8);
+  }
+  
+  @keyframes fade-in {
+    0%   {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  section {
+    background: rgba(0, 0, 0, .4);
+    font-size: 1.6rem;
+  }
+  
+  #controls {
+    text-align: center;
+    line-height: 4em;
+    font-size: calc(10vw);
+  }
+  #controls2{
+    text-align: center;
+    line-height: 4em;
+    font-size: calc(5vw);
+    opacity: 0.5;
+  }
+
+  .box{
+    flex: auto;
+    text-align: center;
+    flex-direction: column;
+    display: flex;
+    
+  }
+  
+  button {
+    background: rgba(255, 0, 255, .5);
+    border: none;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+    font-size: inherit;
+    transition: color 1.6s, background 1.6s;
+    border-radius: .47rem;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background: rgba(255, 255, 255, .5);
+    color: black;
+  }
+  
+  .shader-web-background-fallback {
+    background: red;
+  }
+  
+  .shader-web-background-fallback h1::after {
+    color: red;
+    content: " shader-web-background not supported"
+  }
+
+
+
+
+  /* percpective text */
+  .perspective-text {
+    color: white;
+    font-family: Arial;
+    font-size: 58px;
+    font-weight: 900;
+    letter-spacing: -2px;
+    text-transform: uppercase;
+  }
+  
+  .perspective-line {
+    height: 50px;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  p {
+    margin: 0;
+    height: 50px;
+    line-height: 50px;
+    transition: all 0.5s ease-in-out;
+  }
+  
+  .perspective-line:nth-child(odd) {
+    transform: skew(60deg, -30deg) scaleY(0.667);
+  }
+  
+  .perspective-line:nth-child(even) {
+    transform: skew(0deg, -30deg) scaleY(1.337);
+  }
+  
+  .perspective-text:hover p {
+    transform: translate(0, -50px);
+  }
+  
+  .perspective-line:nth-child(1) {
+    left: 29px;
+  }
+  
+  .perspective-line:nth-child(2) {
+    left: 58px;
+    background: #f07e6e;
+  }
+  
+  .perspective-line:nth-child(3) {
+    left: 87px;
+    background: #84cdfa;
+  }
+  
+  .perspective-line:nth-child(4) {
+    left: 116px;
+    background: #5ad1cd;
+  }
+  
+  .perspective-line:nth-child(5) {
+    left: 145px;
+  }
